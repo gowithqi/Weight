@@ -2,22 +2,22 @@ package main
 
 import (
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"html/template"
-	"net/http"
-	"strings"
 	"log"
-	"time"
+	"net/http"
 	"strconv"
+	"strings"
+	"time"
 )
 
 func weight(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {	
+	if r.Method == "GET" {
 		fmt.Println("GET")
 		t, _ := template.ParseFiles("template/weight.html")
 		t.Execute(w, nil)
-		return 
+		return
 	}
 	fmt.Println("username: ", r.FormValue("username"))
 	fmt.Println("weight: ", r.FormValue("weight"))
@@ -27,15 +27,15 @@ func weight(w http.ResponseWriter, r *http.Request) {
 
 	query := fmt.Sprintf("select * from User where username=\"%s\"", r.FormValue("username"))
 	fmt.Println("query: ", query)
-	row, _:= db.Query(query)
+	row, _ := db.Query(query)
 
-	if  !row.Next() {
-		stmt, _  := db.Prepare("insert User set username=?")
+	if !row.Next() {
+		stmt, _ := db.Prepare("insert User set username=?")
 		stmt.Exec(r.FormValue("username"))
 		fmt.Println("insertn a new user")
 	}
 
-	row, _= db.Query(query)
+	row, _ = db.Query(query)
 	fmt.Println("query")
 
 	for row.Next() {
@@ -49,7 +49,7 @@ func weight(w http.ResponseWriter, r *http.Request) {
 		stmt.Exec(id, time.Now().String(), w)
 
 		query = fmt.Sprintf("select date, weight from WeightRecord where user_id=%d", id)
-		rows, _:=db.Query(query)
+		rows, _ := db.Query(query)
 
 		fmt.Println("User ", username, "'s record:")
 		for rows.Next() {
@@ -64,7 +64,6 @@ func weight(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("template/weight.html")
 	t.Execute(w, nil)
 }
-
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
@@ -86,8 +85,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("username: ", r.Form["username"])
 		fmt.Println("password: ", r.Form["password"])
 	}
-	 t, _ := template.ParseFiles("template/login.html")
-	 t.Execute(w, nil)
+	t, _ := template.ParseFiles("template/login.html")
+	t.Execute(w, nil)
 }
 
 func main() {

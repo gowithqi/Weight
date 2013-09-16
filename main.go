@@ -67,7 +67,7 @@ func weight(w http.ResponseWriter, r *http.Request) {
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	fmt.Println(r.Form)
+	fmt.Println("* method: ", r.Method)
 	fmt.Println("path", r.URL.Path)
 	fmt.Println("scheme", r.URL.Scheme)
 	fmt.Println(r.Form["url_long"])
@@ -78,12 +78,21 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, astaxie!")
 }
 
+//all the static files
+func staticServe(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.URL.Path)
+	file := "template/" + r.URL.Path[1:]
+	fmt.Println(file)
+	http.ServeFile(w, r, file)
+}
+
 func login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("_ method: ", r.Method)
+	fmt.Println("_ method: ", r.Method, "URL: ", r.URL.Path)
 	if r.Method == "POST" {
 		r.ParseForm()
-		fmt.Println("username: ", r.Form["username"])
-		fmt.Println("password: ", r.Form["password"])
+		//have got a username
+		fmt.Println("username: ", r.FormValue("username"))
+		fmt.Println("password: ", r.FormValue("password"))
 	}
 	t, _ := template.ParseFiles("template/login.html")
 	t.Execute(w, nil)
@@ -91,6 +100,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", sayhelloName)
+	http.HandleFunc("/static/", staticServe)
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/weight", weight)
 	err := http.ListenAndServe(":9090", nil)

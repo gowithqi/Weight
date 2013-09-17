@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	//"github.com/Weight/userpage"
 	_ "github.com/go-sql-driver/mysql"
 	"html/template"
 	"log"
@@ -70,7 +71,7 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("* method: ", r.Method)
 	fmt.Println("path", r.URL.Path)
 	fmt.Println("scheme", r.URL.Scheme)
-	fmt.Println(r.Form["url_long"])
+	//fmt.Println(r.Form["url_long"])
 	for k, v := range r.Form {
 		fmt.Println("key: ", k)
 		fmt.Println("key: ", strings.Join(v, ""))
@@ -93,8 +94,16 @@ func login(w http.ResponseWriter, r *http.Request) {
 		//have got a username
 		fmt.Println("username: ", r.FormValue("username"))
 		fmt.Println("password: ", r.FormValue("password"))
+	} else {
+		fmt.Println("__", r.FormValue("user"))
 	}
 	t, _ := template.ParseFiles("template/login.html")
+	t.Execute(w, nil)
+}
+
+func user(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("_ method: ", r.Method, "URL: ", r.URL.Path)
+	t, _ := template.ParseFiles("template/userpage.html")
 	t.Execute(w, nil)
 }
 
@@ -103,6 +112,7 @@ func main() {
 	http.HandleFunc("/static/", staticServe)
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/weight", weight)
+	http.HandleFunc("/user", user)
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

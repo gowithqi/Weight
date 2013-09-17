@@ -4,20 +4,21 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
+	"os"
 )
 
-func (user User) AddFriend (db *sql.DB, shou User) {
+func (user User) AddFriend(db *sql.DB, shou User) {
 	stmt, _ := db.Prepare("insert UserRelation set user1_id=?, user2_id=?")
 	stmt.Exec(user.id, shou.GetId())
 }
 
-func (user User) DeleteFriend (db *sql.DB, shou User) {
+func (user User) DeleteFriend(db *sql.DB, shou User) {
 	stmt, _ := db.Prepare("delete from UserRelation where (user1_id=? and user2_id=?) or (user1_id=? and user2_id=?)")
-	stmt.Exec(user.id, shou.GetId(), shou.GetId(), user.id))
+	stmt.Exec(user.id, shou.GetId(), shou.GetId(), user.id)
 }
 
-func (user User) GetAllFriend(db *sql.DB) ([]User) {
-	friend_users := make([]User)
+func (user *User) GetAllFriend(db *sql.DB) {
+	user.friends = make([]User, 0)
 
 	Log := log.New(os.Stdout, "User.GetAllFriend: ", log.LstdFlags)
 
@@ -38,13 +39,11 @@ func (user User) GetAllFriend(db *sql.DB) ([]User) {
 		if res == "NotExist" {
 			Log.Panicln("there is no such a user id")
 		}
-		friend_users = append(friend_users, newfriend)
+		user.friends = append(user.friends, newfriend)
 	}
-
-	return friend_users
 }
 
-func (user User) IsFriendOf (db *sql.DB, shou User) bool {
+func (user User) IsFriendOf(db *sql.DB, shou User) bool {
 	row, _ := db.Query("select * from UserRelation where (user1_id=? and user2_id=?) or (user1_id=? and user2_id=?)", user.id, shou.GetId(), shou.GetId(), user.id)
 	return row.Next()
 }

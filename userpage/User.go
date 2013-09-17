@@ -1,9 +1,10 @@
-package userpage 
+package userpage
 
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
+	"os"
 	//"time"
 )
 
@@ -11,25 +12,27 @@ import (
 //db, _ := sql.Open("mysql", "zzq:zzq_sjtu@tcp(localhost:3306)/myGoWebDatabase")
 
 type User struct {
-	id int
-	name string
-	status string
-	weight_delta float32
+	id             int
+	name           string
+	status         string
+	weight_delta   float32
+	current_weight float32
+	friends        []User
 }
 
-func (user User) GetId() (int) {
+func (user User) GetId() int {
 	return user.id
 }
 
-func (user User) GetName() (string) {
+func (user User) GetName() string {
 	return user.name
 }
 
-func (user User) GetStatus() (string) {
+func (user User) GetStatus() string {
 	return user.status
 }
 
-func (user User) GetWeightDelta() (float32) {
+func (user User) GetWeightDelta() float32 {
 	return user.weight_delta
 }
 
@@ -40,7 +43,7 @@ func GetUserWithName(db *sql.DB, username string, password string) (User, string
 	row, _ := db.Query("select * from User where username=?", username)
 	if !row.Next() {
 		Log.Println("there is not such a user")
-		return nil, "NotExist"
+		return user, "NotExist"
 	}
 
 	var passwordC string //correct password
@@ -49,9 +52,8 @@ func GetUserWithName(db *sql.DB, username string, password string) (User, string
 
 	if password != passwordC {
 		Log.Println("password is not correct")
-		return nil, "PasswordWrong"
-	}
-	else {
+		return user, "PasswordWrong"
+	} else {
 		Log.Println("get a User successfully")
 		return user, "Success"
 	}
@@ -64,7 +66,7 @@ func GetUserWithId(db *sql.DB, id int) (User, string) {
 	row, _ := db.Query("select id, username, status, weight_delta from User where id=?", id)
 	if !row.Next() {
 		Log.Println("there is not such a user")
-		return nil, "NotExist"
+		return user, "NotExist"
 	}
 
 	row.Scan(&user.id, &user.name, &user.status, &user.weight_delta)

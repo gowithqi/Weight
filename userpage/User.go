@@ -11,29 +11,36 @@ import (
 //var db *sql.DB
 //db, _ := sql.Open("mysql", "zzq:zzq_sjtu@tcp(localhost:3306)/myGoWebDatabase")
 
+type WeightAndDate struct {
+	Weight float32
+	Date   string
+}
+
 type User struct {
-	id             int
-	name           string
-	status         string
-	weight_delta   float32
-	current_weight float32
-	friends        []User
+	Id             int
+	Name           string
+	Status         string
+	Weight_delta   float32
+	Current_weight float32
+	Friends        []User
+
+	HistoryWeight []WeightAndDate
 }
 
 func (user User) GetId() int {
-	return user.id
+	return user.Id
 }
 
 func (user User) GetName() string {
-	return user.name
+	return user.Name
 }
 
 func (user User) GetStatus() string {
-	return user.status
+	return user.Status
 }
 
 func (user User) GetWeightDelta() float32 {
-	return user.weight_delta
+	return user.Weight_delta
 }
 
 func GetUserWithName(db *sql.DB, username string, password string) (User, string) {
@@ -48,7 +55,7 @@ func GetUserWithName(db *sql.DB, username string, password string) (User, string
 
 	var passwordC string //correct password
 
-	row.Scan(&user.id, &user.name, &passwordC, &user.status, &user.weight_delta)
+	row.Scan(&user.Id, &user.Name, &passwordC, &user.Status, &user.Weight_delta)
 
 	if password != passwordC {
 		Log.Println("password is not correct")
@@ -69,7 +76,7 @@ func GetUserWithId(db *sql.DB, id int) (User, string) {
 		return user, "NotExist"
 	}
 
-	row.Scan(&user.id, &user.name, &user.status, &user.weight_delta)
+	row.Scan(&user.Id, &user.Name, &user.Status, &user.Weight_delta)
 	Log.Println("get a User successfully")
 	return user, "Success"
 }

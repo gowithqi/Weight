@@ -3,11 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	//"github.com/Weight/userpage"
+	"github.com/Weight/login"
+	"github.com/Weight/userpage"
 	_ "github.com/go-sql-driver/mysql"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -87,6 +89,7 @@ func staticServe(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, file)
 }
 
+/*
 func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("_ method: ", r.Method, "URL: ", r.URL.Path)
 	if r.Method == "POST" {
@@ -100,6 +103,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("template/login.html")
 	t.Execute(w, nil)
 }
+*/
 
 func user(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("_ method: ", r.Method, "URL: ", r.URL.Path)
@@ -107,11 +111,56 @@ func user(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
+func submitWeight(w http.ResponseWriter, r *http.Request) {
+	var Log *log.Logger
+	Log = log.New(os.Stdout, "submitWeight: ", log.LstdFlags)
+	if r.Method == "POST" {
+		db, _ := sql.Open("mysql", "zzq:zzq_sjtu@tcp(localhost:3306)/myGoWebDatabase")
+
+		_user_weight, err := strconv.ParseFloat(r.FormValue("weight"), 32)
+		user_weight := float32(_user_weight)
+		if err != nil {
+			Log.Println("format of weight is wrong, weight is ", r.FormValue("weight"))
+		}
+		_user_id, err := strconv.ParseInt(r.FormValue("user_id"), 10, 0)
+		user_id := int(_user_id)
+		if err != nil {
+			Log.Println("format of useid is wrong, useid is ", r.FormValue("user_id"))
+		}
+
+		user, _ := userpage.GetUserWithId(db, user_id)
+		user.RecordWeight(db, user_weight)
+
+		login.OpenLoginHTML(w, user)
+
+		Log.Println("successfully record a weight")
+	}
+}
+
+func requestWeightData(w http.ResponseWriter, r *http.Request) {
+	var Log *log.Logger
+	Log = log.New(os.Stdout, "submitWeight: ", log.LstdFlags)
+	if r.Method == "POST" {
+		db, _ := sql.Open("mysql", "zzq:zzq_sjtu@tcp(localhost:3306)/myGoWebDatabase")
+
+		_user_id, _ := strconv.ParseInt(r.FormValue("user_id"), 10, 0)
+		user_id := int(_user_id)
+
+		user, _ := userpage.GetUserWithId(db, user_id)
+
+		user.RequestWeightData(db, r.FormValue("start_date"))
+		login.OpenLoginHTML(w, user)
+
+		Log.Println("successfully request weight history")
+	}
+}
 func main() {
+	//db, _ := sql.Open("mysql", "zzq:zzq_sjtu@tcp(localhost:3306)/myGoWebDatabase")
 	http.HandleFunc("/", sayhelloName)
 	http.HandleFunc("/static/", staticServe)
-	http.HandleFunc("/login", login)
-	http.HandleFunc("/weight", weight)
+	http.HandleFunc("/login", login.Login)
+	http.HandleFunc("/weight/submit", submitWeight)
+	http.HandleFunc("/weight/requestweightdata", requestWeightData)
 	http.HandleFunc("/user", user)
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {

@@ -25,7 +25,7 @@ func (user *User) RecordWeight(db *sql.DB, user_weight float32) {
 	for rows.Next() {
 		rows.Scan(&weight_delta)
 	}
-	stmt, _ = db.Prepare("update User set status=?, weight_delta=? where user_id=?")
+	stmt, _ = db.Prepare("update User set status=?, weight_delta=? where id=?")
 	stmt.Exec(time.Now().Format("2006-01-02"),
 		weight_delta,
 		user.Id)

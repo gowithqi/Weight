@@ -5,7 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"os"
-	//"time"
+	"time"
 )
 
 //var db *sql.DB
@@ -56,6 +56,9 @@ func GetUserWithName(db *sql.DB, username string, password string) (User, string
 	var passwordC string //correct password
 
 	row.Scan(&user.Id, &user.Name, &passwordC, &user.Status, &user.Weight_delta)
+	if time.Now().Format("2006-01-02") != user.Status {
+		user.Weight_delta = -1.0
+	}
 
 	if password != passwordC {
 		Log.Println("password is not correct")
@@ -77,6 +80,9 @@ func GetUserWithId(db *sql.DB, id int) (User, string) {
 	}
 
 	row.Scan(&user.Id, &user.Name, &user.Status, &user.Weight_delta)
+	if time.Now().Format("2006-01-02") != user.Status {
+		user.Weight_delta = -1.0
+	}
 	Log.Println("get a User successfully")
 	return user, "Success"
 }

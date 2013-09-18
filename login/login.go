@@ -47,6 +47,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		user, res := userpage.GetUserWithName(db, r.FormValue("username"), r.FormValue("password"))
 		switch res {
 		case "Success":
+			user.GetAllFriend(db)
+			user.SortFriendsWeight()
 			t, _ := template.ParseFiles("template/userpage.html") //there is some code
 			t.Execute(w, user)
 		case "PasswordWrong":

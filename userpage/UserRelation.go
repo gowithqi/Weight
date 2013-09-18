@@ -47,3 +47,13 @@ func (user User) IsFriendOf(db *sql.DB, shou User) bool {
 	row, _ := db.Query("select * from UserRelation where (user1_id=? and user2_id=?) or (user1_id=? and user2_id=?)", user.Id, shou.GetId(), shou.GetId(), user.Id)
 	return row.Next()
 }
+
+func (user User) SortFriendsWeight() {
+	for i := 0; i < len(user.Friends); i++ {
+		for j := i + 1; j < len(user.Friends); i++ {
+			if user.Friends[i].Weight_delta < user.Friends[i].Weight_delta {
+				user.Friends[i], user.Friends[j] = user.Friends[j], user.Friends[i]
+			}
+		}
+	}
+}

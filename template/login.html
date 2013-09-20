@@ -31,33 +31,6 @@
 	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
 	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/static/js/scripts.js"></script>
-	<script type="text/javascript">
-		function showCustomer()
-		{
-		var xmlhttp;    
-
-		  document.getElementById("txtHint").innerHTML="";
-
-		if (window.XMLHttpRequest)
-		  {// code for IE7+, Firefox, Chrome, Opera, Safari
-		  xmlhttp=new XMLHttpRequest();
-		  }
-		else
-		  {// code for IE6, IE5
-		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-		  }
-		xmlhttp.onreadystatechange=function()
-		  {
-		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-		    {
-		    document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
-		    }
-		  }
-		xmlhttp.open("POST","/weight/requestweightdata1", true);
-		xmlhttp.setRequestHeader("Context-type", "123");
-		xmlhttp.send("start_date=2013-09-17&user_id=6");
-		}
-</script>
 </head>
 
 <body>
@@ -112,7 +85,6 @@
 	 	</fieldset>
 	 </form>
 </div>
-<button name="sendData" onClick="showCustomer()">sendData</button>
-<div id="txtHint">客户信息将在此处列出 ...</div>
+
 </body>
 </html>

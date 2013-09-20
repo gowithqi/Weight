@@ -33,7 +33,7 @@ func (user *User) RecordWeight(db *sql.DB, user_weight float32) {
 }
 
 func (user *User) RequestWeightData(db *sql.DB, start_date string) {
-	rows, _ := db.Query("select date, weight from WeightRecord where user_id=? and date>=?", user.Id, start_date)
+	rows, _ := db.Query("select date, avg(weight) from WeightRecord where user_id=? and date>=? group by date", user.Id, start_date)
 
 	Log := log.New(os.Stdout, "User.RequestWeightData: ", log.LstdFlags)
 	Log.Println("have got requested user weight data from database")

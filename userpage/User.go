@@ -49,7 +49,7 @@ func GetUserWithName(db *sql.DB, username string, password string) (User, string
 	Log := log.New(os.Stdout, "GetUser: ", log.LstdFlags)
 	row, _ := db.Query("select * from User where username=?", username)
 	if !row.Next() {
-		Log.Println("there is not such a user")
+		Log.Println("there is not such a user. username= ", username)
 		return user, "NotExist"
 	}
 
@@ -75,7 +75,7 @@ func GetUserWithId(db *sql.DB, id int) (User, string) {
 	Log := log.New(os.Stdout, "GetUser: ", log.LstdFlags)
 	row, _ := db.Query("select id, username, status, weight_delta from User where id=?", id)
 	if !row.Next() {
-		Log.Println("there is not such a user")
+		Log.Println("there is not such a user. id = ", id)
 		return user, "NotExist"
 	}
 

@@ -154,6 +154,25 @@ func requestWeightData(w http.ResponseWriter, r *http.Request) {
 		Log.Println("successfully request weight history")
 	}
 }
+func requestWeightData1(w http.ResponseWriter, r *http.Request) {
+	var Log *log.Logger
+	Log = log.New(os.Stdout, "submitWeight: ", log.LstdFlags)
+	if r.Method == "POST" {
+		db, _ := sql.Open("mysql", "zzq:zzq_sjtu@tcp(localhost:3306)/myGoWebDatabase")
+
+		_user_id, _ := strconv.ParseInt(r.FormValue("user_id"), 10, 0)
+		user_id := int(_user_id)
+
+		user, _ := userpage.GetUserWithId(db, user_id)
+
+		user.RequestWeightData(db, r.FormValue("start_date"))
+		t := template.New("try")
+		t, _ = t.Parse("FUCK") //there is some code
+		t.Execute(w, nil)
+
+		Log.Println("successfully request weight history")
+	}
+}
 func main() {
 	//db, _ := sql.Open("mysql", "zzq:zzq_sjtu@tcp(localhost:3306)/myGoWebDatabase")
 	http.HandleFunc("/", sayhelloName)
@@ -162,6 +181,7 @@ func main() {
 	http.HandleFunc("/weight/submit", submitWeight)
 	http.HandleFunc("/weight/requestweightdata", requestWeightData)
 	http.HandleFunc("/user", user)
+	http.HandleFunc("/weight/requestweightdata1", requestWeightData1)
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

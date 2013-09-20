@@ -32,9 +32,33 @@
 	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/static/js/scripts.js"></script>
 	<script type="text/javascript">
-	function confirmw(){
-		return confirm("Your weight todday is"+document.WeightSubmit.weight.value+". \nAre you sure to submmit?")
-	}
+	function showGraph(start_date, user_id)
+		{
+		var xmlhttp;    
+
+		  document.getElementById("txtHint").innerHTML="";
+
+		if (window.XMLHttpRequest)
+		  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		  xmlhttp=new XMLHttpRequest();
+		  }
+		else
+		  {// code for IE6, IE5
+		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		xmlhttp.onreadystatechange=function()
+		  {
+		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		    {
+		    var res = xmlhttp.responseText;
+
+		    document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+		    }
+		  }
+		xmlhttp.open("POST","/weight/requestweightdata1", true);
+		xmlhttp.setRequestHeader("Context-type", "123");
+		xmlhttp.send("start_date="+start_date+"&user_id="+user_id);
+		}
 	</script>
 </head>
 
@@ -75,7 +99,7 @@
 							 <button type="submit" onClick="confirmw()" class="btn">Submit</button>
 						</fieldset>
 					</form>
-					<form action="/weight/requestweightdata" method="POST">
+					<form action="" onsubmit="showGraph(this.start_date, this.user_id)">
 						<fieldset>
 							 <legend>Check Your Weights!</legend> 
 							 <label>From Date</label>
@@ -85,6 +109,8 @@
 							 <button type="submit" class="btn">Submit</button>
 						</fieldset>
 					</form>
+					<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+					<!--
 					<table class="table table-striped table-hover">
 						<thead>
 							<tr>
@@ -109,6 +135,7 @@
 							{{end}}
 						</tbody>
 					</table>
+					-->
 				</div>
 				<div class="span4">
 					<legend>FriendRanking</legend> 

@@ -67,7 +67,7 @@
 		    for (i = 0; i < records.length; ++i) {
 		    	var d = records[i].split("-");
 		    	var year = parseInt(d[0]);
-		    	var month = parseInt(d[1]);
+		    	var month = parseInt(d[1]) - 1;
 		    	var day = parseInt(d[2]);
 		    	var w = parseFloat(d[3]);
 		    	data[i] = [Date.UTC(year,  month, day), w]

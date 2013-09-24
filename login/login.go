@@ -16,7 +16,7 @@ import (
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	var Log *log.Logger
-	Log = log.New(os.Stdout, "login: ", log.LstdFlags)
+	Log = log.New(os.Stdout, "login.Login: ", log.LstdFlags)
 
 	switch r.Method {
 	case "GET":
@@ -51,9 +51,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			user.SortFriendsWeight()
 			t, _ := template.ParseFiles("template/userpage.html") //there is some code
 			t.Execute(w, user)
+			Log.Println("User: ", user.Name, ", log in successfully")
 		case "PasswordWrong":
 			t, _ := template.ParseFiles("template/login.html")
 			t.Execute(w, nil)
+			Log.Println("User: ", user.Name, ", password is wrong")
 		}
 	}
 }

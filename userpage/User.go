@@ -46,7 +46,7 @@ func (user User) GetWeightDelta() float32 {
 func GetUserWithName(db *sql.DB, username string, password string) (User, string) {
 	var user User
 
-	Log := log.New(os.Stdout, "GetUser: ", log.LstdFlags)
+	Log := log.New(os.Stdout, "userpage.GetUserWithName: ", log.LstdFlags)
 	row, _ := db.Query("select * from User where username=?", username)
 	if !row.Next() {
 		Log.Println("there is not such a user. username= ", username)
@@ -61,10 +61,10 @@ func GetUserWithName(db *sql.DB, username string, password string) (User, string
 	}
 
 	if password != passwordC {
-		Log.Println("password is not correct")
+		Log.Println("User: ", user.Name, ", password is not correct")
 		return user, "PasswordWrong"
 	} else {
-		Log.Println("get a User successfully")
+		Log.Println("User: ", user.Name, ", get a User successfully")
 		return user, "Success"
 	}
 }
@@ -72,7 +72,7 @@ func GetUserWithName(db *sql.DB, username string, password string) (User, string
 func GetUserWithId(db *sql.DB, id int) (User, string) {
 	var user User
 
-	Log := log.New(os.Stdout, "GetUser: ", log.LstdFlags)
+	Log := log.New(os.Stdout, "userpage.GetUserWithId: ", log.LstdFlags)
 	row, _ := db.Query("select id, username, status, weight_delta from User where id=?", id)
 	if !row.Next() {
 		Log.Println("there is not such a user. id = ", id)
@@ -83,6 +83,6 @@ func GetUserWithId(db *sql.DB, id int) (User, string) {
 	if time.Now().Format("2006-01-02") != user.Status {
 		user.Weight_delta = -1.0
 	}
-	Log.Println("get a User successfully")
+	Log.Println("User: ", user.Name, ", get a User successfully")
 	return user, "Success"
 }

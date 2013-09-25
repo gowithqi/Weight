@@ -7,9 +7,32 @@ import (
 	"os"
 )
 
-func (user User) AddFriend(db *sql.DB, shou User) {
-	stmt, _ := db.Prepare("insert UserRelation set user1_id=?, user2_id=?")
-	stmt.Exec(user.Id, shou.GetId())
+func (user User) FriendAddingRequest(db *sql.DB, shou User) {
+	stmt, _ := db.Prepare("insert FriendAddingRequest set gong_id=?, shou_id=?")
+	stmt.Exec(user.Id, shou.Id)
+}
+
+func (user User) GetFriendAddingRequest(db *sql.DB) []User {
+	var res = make([]User, 0)
+	rows, _ := db.Query("select gong_id from FriendAddingRequest where shou_id=?", user.Id)
+	for rows.Next() {
+		var tmp User
+		var gong_id int
+		rows.Scan(&gong_id)
+
+		tmp, err := GetUserWithId(db, gong_id)
+		if err != "NotExist" {
+			res = append(res, tmp)
+		}
+	}
+	return res
+}
+
+func (user User) AddFriend(db *sql.DB, gong User) {
+	stmt, _ := db.Prepare("delect from FriendAddingRequest where (gong_id=? and shou_id=?)")
+	stmt.Exec(gong.Id, user.Id)
+	stmt, _ = db.Prepare("insert UserRelation set user1_id=?, user2_id=?")
+	stmt.Exec(user.Id, gong.Id)
 }
 
 func (user User) DeleteFriend(db *sql.DB, shou User) {
